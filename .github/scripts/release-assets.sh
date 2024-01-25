@@ -7,7 +7,7 @@ set -E          # needs to be set if we want the ERR trap
 set -o pipefail # prevents errors in a pipeline from being masked
 
 # Expected variables:
-PULL_BASE_REF=${PULL_BASE_REF?"Define PULL_BASE_REF env"} # name of the tag
+RELEASE_ID=${RELEASE_ID?"Define RELEASE_ID env"}
 GITHUB_TOKEN=${GITHUB_TOKEN?"Define GITHUB_TOKEN env"} # github token used to upload the template yaml
 
 uploadFile() {
@@ -30,36 +30,37 @@ uploadFile() {
   fi
 }
 
-echo "Fetching releases"
-CURL_RESPONSE=$(curl -w "%{http_code}" -sL \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer $GITHUB_TOKEN"\
-                https://api.github.com/repos/kyma-project/warden/releases)
-JSON_RESPONSE=$(sed '$ d' <<< "${CURL_RESPONSE}")
-HTTP_CODE=$(tail -n1 <<< "${CURL_RESPONSE}")
-if [[ "${HTTP_CODE}" != "200" ]]; then
-  echo "${CURL_RESPONSE}"
-  exit 1
-fi
+echo "Uploading release assets for release ${RELEASE_ID}"
+# CURL_RESPONSE=$(curl -w "%{http_code}" -sL \
+#                 -H "Accept: application/vnd.github+json" \
+#                 -H "Authorization: Bearer $GITHUB_TOKEN"\
+#                 https://api.github.com/repos/kyma-project/warden/releases)
+# JSON_RESPONSE=$(sed '$ d' <<< "${CURL_RESPONSE}")
+# echo $JSON_RESPONSE
+# HTTP_CODE=$(tail -n1 <<< "${CURL_RESPONSE}")
+# if [[ "${HTTP_CODE}" != "200" ]]; then
+#   echo "${CURL_RESPONSE}"
+#   exit 1
+# fi
 
-echo "Finding release id for: ${PULL_BASE_REF}"
-RELEASE_ID=$(jq <<< ${JSON_RESPONSE} --arg tag "${PULL_BASE_REF}" '.[] | select(.tag_name == $ARGS.named.tag) | .id')
+# echo "Finding release id for: ${PULL_BASE_REF}"
+# RELEASE_ID=$(jq <<< ${JSON_RESPONSE} --arg tag "${PULL_BASE_REF}" '.[] | select(.tag_name == $ARGS.named.tag) | .id')
 
-echo "Got '${RELEASE_ID}' release id"
-if [ -z "${RELEASE_ID}" ]
-then
-  echo "No release with tag = ${PULL_BASE_REF}"
-  exit 1
-fi
+# echo "Got '${RELEASE_ID}' release id"
+# if [ -z "${RELEASE_ID}" ]
+# then
+#   echo "No release with tag = ${PULL_BASE_REF}"
+#   exit 1
+# fi
 
 echo "Updating github release with assets"
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/warden/releases/${RELEASE_ID}/assets"
 
 
 
-( cd charts ; tar czf "warden-${PULL_BASE_REF}.tgz" warden)
+( cd charts ; tar czf "warden-chart.tgz" warden)
 
-uploadFile "charts/warden-${PULL_BASE_REF}.tgz" "${UPLOAD_URL}?name=warden-chart.tgz"
+uploadFile "charts/warden-chart.tgz" "${UPLOAD_URL}?name=warden-chart.tgz"
 
 
 
