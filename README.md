@@ -2,6 +2,8 @@
 
 K8s image authenticity validator
 
+> **⚠️ WARNING: This project is archived and will no longer be maintained. No further updates, bug fixes, or security patches will be provided. Please use at your own risk.**
+
 ## Status
 
 [![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/warden)](https://api.reuse.software/info/github.com/kyma-project/warden)
