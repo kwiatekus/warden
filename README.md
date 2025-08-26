@@ -2,7 +2,7 @@
 
 K8s image authenticity validator
 
-> **⚠️ WARNING: This project is archived and will no longer be maintained. No further updates, bug fixes, or security patches will be provided. Please use at your own risk.**
+> **⚠️ WARNING: This project is archived and will no longer be maintained. No further updates, bug fixes, or security patches will be provided. Use it at your own risk.**
 
 ## Status
 
